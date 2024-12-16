@@ -32,9 +32,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // }, 5000);
 
     // TODO: Implement WebSocket or other method to receive messages from the backend server
-	const socket = io()
+	const socket = io();
 
 	// TODO: Receive only messages that are sent AFTER client has joined room
+	// Want to give names to other clients now
 	socket.on("receiveOtherClientMessages", (arg) => {
 		console.log("Messages are " + arg);
 		addMessage(arg, "Other");
