@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', (event) => {
     const messagesContainer = document.getElementById('messages');
     const messageInput = document.getElementById('message-input');
@@ -26,4 +27,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // }, 5000);
 
     // TODO: Implement WebSocket or other method to receive messages from the backend server
+	const socket = io();
+
+	// socket.emit("ClientConnect", "test");
+
+	// socket.on("connect", () => {
+	// 	console.log(socket.id);
+	// });
+
+
 });
