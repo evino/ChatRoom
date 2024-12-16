@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             addMessage(message, 'You'); // You send the message
             messageInput.value = '';
 
-            
             // TODO: Send the message to the backend server
+			socket.emit("recvClientMessage", message);
         }
 
-		socket.emit("clientMessage", message);
+		// socket.emit("recvClientMessage", message);
 		
     });
 
@@ -34,11 +34,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // TODO: Implement WebSocket or other method to receive messages from the backend server
 	const socket = io()
 
-	// socket.emit("ClientConnect", "test");
-
-	// socket.on("connect", () => {
-	// 	console.log(socket.id);
-	// });
-
+	// TODO: Receive only messages that are sent AFTER client has joined room
+	socket.on("receiveOtherClientMessages", (arg) => {
+		console.log("Messages are " + arg);
+		addMessage(arg, "Other");
+	});
 
 });

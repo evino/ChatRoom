@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const { listeners } = require('process');
 const { Server } = require('socket.io');
 
 // Create an Express app
@@ -32,8 +33,9 @@ io.on("connection", (socket) => {
 
 	})
 
-	socket.on("clientMessage", (msg) => {
+	socket.on("recvClientMessage", (msg) => {
 		console.log(`Client said "${msg}".`);
+		socket.broadcast.emit("receiveOtherClientMessages", msg);
 	});
 
 	console.log(`${ClientCount()} total clients connected.`);
