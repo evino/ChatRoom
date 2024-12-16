@@ -13,6 +13,12 @@ const io = new Server(httpServer, { /* options */ });
 
 
 let clientSet = new Set();
+
+function ClientCount() {
+	const count = clientSet.size;
+	return count;
+}
+
 io.on("connection", (socket) => {
 	// console.log("user connected");
 	console.log("client id is " + socket.id);
@@ -22,11 +28,15 @@ io.on("connection", (socket) => {
 		clientSet.delete(socket.id);
 		console.log('disconnected');
 		console.log(reason);
-		console.log(`${clientSet.size} total clients connected.`);
+		console.log(`${ClientCount()} total clients connected.`);
 
 	})
 
-	console.log(`${clientSet.size} total clients connected.`);
+	socket.on("clientMessage", (msg) => {
+		console.log(`Client said "${msg}".`);
+	});
+
+	console.log(`${ClientCount()} total clients connected.`);
 });
 
 

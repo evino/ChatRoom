@@ -13,12 +13,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     sendButton.addEventListener('click', () => {
         const message = messageInput.value;
+		
         if (message.trim() !== '') {
             addMessage(message, 'You'); // You send the message
             messageInput.value = '';
+
             
             // TODO: Send the message to the backend server
         }
+
+		socket.emit("clientMessage", message);
+		
     });
 
     // // Simulate receiving messages from other users
@@ -27,7 +32,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // }, 5000);
 
     // TODO: Implement WebSocket or other method to receive messages from the backend server
-	const socket = io();
+	const socket = io()
 
 	// socket.emit("ClientConnect", "test");
 
