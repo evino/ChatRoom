@@ -1,2 +1,2 @@
 # ChatRoom
-Simple chat room project to practice JS backend
+Simple chat room project to practice backend with NodeJS
