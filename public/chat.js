@@ -1,8 +1,9 @@
-
 document.addEventListener('DOMContentLoaded', (event) => {
     const messagesContainer = document.getElementById('messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
+
+
 
     function addMessage(message, sender) {
         const messageDiv = document.createElement('div');
@@ -30,6 +31,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // setInterval(() => {
     //     addMessage('Hello from another user!', 'Other');
     // }, 5000);
+
+    let isLoggedIn = false;
+    // const axios = require('axios/dist/browser/axios.cjs');
+    // const axios = require('axios').default;
+
+    if (isLoggedIn === false) {
+        console.log('Not logged in');
+        axios.get('login').then((req, res) => {
+            console.log(req);
+        });
+    }
 
     // TODO: Implement WebSocket or other method to receive messages from the backend server
 	const socket = io();

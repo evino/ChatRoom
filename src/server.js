@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { listeners } = require('process');
 const { Server } = require('socket.io');
+const path  = require('path');
 
 // Create an Express app
 const app = express();
@@ -12,6 +13,8 @@ const httpServer = http.createServer(app);
 // Set up Socket.IO on HTTP server
 const io = new Server(httpServer, { /* options */ });
 
+// public directory path
+const public_dir = '/home/ubuntu/Working/ChatRoom/public/'
 
 let clientSet = new Set();
 
@@ -41,15 +44,24 @@ io.on("connection", (socket) => {
 	console.log(`${ClientCount()} total clients connected.`);
 });
 
-
+// Serve static files from the "public" directory
+app.use(express.static('public'));
 
 // app.get('/', (req, res) => {
 // 	// res.send('Test');
-// 	res.send('Hello World');
+// 	res.sendFile(path.join(public_dir, 'index.html'));
 // });
 
-// Serve static files from the "public" directory
-app.use(express.static('public'));
+app.get('/login', (req, res) => {
+	// console.log('debug');
+	res.sendFile(path.join(public_dir, 'login.html'));
+})
+
+
+
+// app.get('/login', (req, res) => {
+// 	res.sendFile('public', 'login.html');
+// })
 
 const PORT = process.env.PORT || 8080;
 httpServer.listen(PORT, () => {
