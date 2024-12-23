@@ -3,6 +3,7 @@ const http = require('http');
 const { listeners } = require('process');
 const { Server } = require('socket.io');
 const path  = require('path');
+const session = require('express-session');
 
 // Create an Express app
 const app = express();
@@ -45,12 +46,31 @@ io.on("connection", (socket) => {
 });
 
 // Serve static files from the "public" directory
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
-// app.get('/', (req, res) => {
-// 	// res.send('Test');
-// 	res.sendFile(path.join(public_dir, 'index.html'));
-// });
+// Use session middleware
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+}));
+
+app.get('/', (req, res) => {
+	// res.send('Test');
+	if (req.session.username) {
+		console.log('user exissts');
+	} else {
+		console.log('user does not exist');
+		// res.sendFile(path.join(public_dir, 'login.html'));
+		res.redirect('/login');
+	}
+	res.sendFile(path.join(public_dir, 'index.html'));
+});
+
+app.get('/chat.js', (req, res) => {
+	res.sendFile(path.join(public_dir, 'chat.js'));
+});
+
 
 app.get('/login', (req, res) => {
 	// console.log('debug');

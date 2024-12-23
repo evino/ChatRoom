@@ -38,9 +38,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     if (isLoggedIn === false) {
         console.log('Not logged in');
-        axios.get('login').then((req, res) => {
-            console.log(req);
-        });
+        // axios.get('login').then((req, res) => {
+        //     console.log(req);
+        // });
+        // window.location.href = '/login';
     }
 
     // TODO: Implement WebSocket or other method to receive messages from the backend server
