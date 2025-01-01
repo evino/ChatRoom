@@ -1,21 +1,31 @@
-const express = require('express');
-const http = require('http');
-const { listeners } = require('process');
-const { Server } = require('socket.io');
-const path  = require('path');
-const session = require('express-session');
+import express from 'express';
+import { createServer } from 'http';
+// import { listeners } from 'process';
+import { Server } from 'socket.io';
+import { join } from 'path';
+import session from 'express-session';
 
 // Create an Express app
 const app = express();
 
 // Create an http server using the Express app
-const httpServer = http.createServer(app);
+const httpServer = createServer(app);
 
 // Set up Socket.IO on HTTP server
 const io = new Server(httpServer, { /* options */ });
 
 // public directory path
 const public_dir = '/home/ubuntu/Working/ChatRoom/public/'
+
+// Import connection from db.js
+// const createAndConnectDB = require('./db.js');
+import createAndConnectDB  from './db.js'
+async function ConnectDB() {
+	const connection = await createAndConnectDB();
+	console.log('Connected to database as id ' + connection.threadId);
+}
+ConnectDB();
+
 
 let clientSet = new Set();
 
@@ -64,17 +74,17 @@ app.get('/', (req, res) => {
 		// res.sendFile(path.join(public_dir, 'login.html'));
 		// res.redirect('/login');
 	}
-	res.sendFile(path.join(public_dir, 'index.html'));
+	res.sendFile(join(public_dir, 'index.html'));
 });
 
 app.get('/chat.js', (req, res) => {
-	res.sendFile(path.join(public_dir, 'chat.js'));
+	res.sendFile(join(public_dir, 'chat.js'));
 });
 
 
 app.get('/login', (req, res) => {
 	// console.log('debug');
-	res.sendFile(path.join(public_dir, 'login.html'));
+	res.sendFile(join(public_dir, 'login.html'));
 })
 
 
