@@ -62,7 +62,7 @@ app.get('/', (req, res) => {
 	} else {
 		console.log('user does not exist');
 		// res.sendFile(path.join(public_dir, 'login.html'));
-		res.redirect('/login');
+		// res.redirect('/login');
 	}
 	res.sendFile(path.join(public_dir, 'index.html'));
 });
