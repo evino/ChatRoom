@@ -25,7 +25,7 @@ async function ConnectDB() {
 	console.log('Connected to database as id ' + connection.threadId);
 	return connection;
 }
-const dbConnection = await ConnectDB();
+const dbConnection =  await ConnectDB();
 
 
 let clientSet = new Set();
@@ -88,10 +88,10 @@ app.get('/login', (req, res) => {
 
 	// TODO REMOVE
 	// FOR TESTING PURPOSE
-	const query = 'SELECT * FROM users';
+	const query = 'SELECT id, username, email FROM users WHERE id IS NOT NULL AND username IS NOT NULL AND email IS NOT NULL';
 	dbConnection.query(query, (err, results) => {
 		if (err) {
-			console.err('Error executing query:', err);
+			console.error('Error executing query:', err);
 			return;
 		}
 
