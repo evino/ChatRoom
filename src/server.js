@@ -23,8 +23,9 @@ import createAndConnectDB  from './db.js'
 async function ConnectDB() {
 	const connection = await createAndConnectDB();
 	console.log('Connected to database as id ' + connection.threadId);
+	return connection;
 }
-ConnectDB();
+const dbConnection = await ConnectDB();
 
 
 let clientSet = new Set();
@@ -84,7 +85,20 @@ app.get('/chat.js', (req, res) => {
 
 app.get('/login', (req, res) => {
 	// console.log('debug');
+
+	// TODO REMOVE
+	// FOR TESTING PURPOSE
+	const query = 'SELECT * FROM users';
+	dbConnection.query(query, (err, results) => {
+		if (err) {
+			console.err('Error executing query:', err);
+			return;
+		}
+
+		console.log(`Query Results: ${JSON.stringify(results, null, 2)}`);
+	});
 	res.sendFile(join(public_dir, 'login.html'));
+
 })
 
 
