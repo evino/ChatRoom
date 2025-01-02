@@ -5,6 +5,8 @@ import { Server } from 'socket.io';
 import { join } from 'path';
 import session from 'express-session';
 import bodyParser from 'body-parser';
+import { createAndConnectDB, addUser, selectAllRows, userLookUp } from './db.js'
+
 // const bodyParser = require('body-parser');
 
 // Create an Express app
@@ -23,16 +25,8 @@ const io = new Server(httpServer, { /* options */ });
 // public directory path
 const public_dir = '/home/ubuntu/Working/ChatRoom/public/'
 
-// Import connection from db.js
-// const createAndConnectDB = require('./db.js');
-import { createAndConnectDB, addUser, selectAllRows, userLookUp } from './db.js'
-async function ConnectDB() {
-	const connection = await createAndConnectDB();
-	// console.log('Connected to database as id ' + connection.threadId);
-	return connection;
-}
-const dbConnection =  await ConnectDB();
-
+// Create connection to database
+createAndConnectDB();
 
 let clientSet = new Set();
 
@@ -73,6 +67,8 @@ app.use(session({
     cookie: { secure: false }
 }));
 
+
+// Index endpoint
 app.get('/', (req, res) => {
 	console.log(req.session);
 	console.log('username: ' + req.session.username);
@@ -87,16 +83,20 @@ app.get('/', (req, res) => {
 	// res.sendFile(join(public_dir, 'index.html'));
 });
 
+
+// chat.js
 app.get('/chat.js', (req, res) => {
 	res.sendFile(join(public_dir, 'chat.js'));
 });
 
 
+// Endpoint that servers login page
 app.get('/login', async (req, res) => {
 	res.sendFile(join(public_dir, 'login.html'));
 });
 
-// Look up username and password
+
+// Look up username and password. Returns true if login is correct, false otherwise.
 app.post('/user_lookup', async (req, res) => {
 	const { username, password } = req.body;
 	console.log(username + password);
@@ -117,13 +117,15 @@ app.post('/user_lookup', async (req, res) => {
 });
 
 
-// Sign up endpoint
+// Serves signup page.
 app.get('/signup', (req, res) => {
 	res.sendFile(join(public_dir, 'signup.html'));
 });
 
 
+// Endpoint that adds user to database
 app.post('/adduser', async (req, res) => {
+	// TODO: Add encryption for passwords rather than storing in plain text
 	console.log(`Body contains ${JSON.stringify(req.body, null, 2)}`);
 	const { email, username, password } = req.body;
 	try {
