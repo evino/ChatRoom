@@ -4,9 +4,15 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { join } from 'path';
 import session from 'express-session';
+import bodyParser from 'body-parser';
+// const bodyParser = require('body-parser');
 
 // Create an Express app
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(bodyParser.json()); // Parse JSON bodies
+app.use(express.json()); // Parse JSON bodies
 
 // Create an http server using the Express app
 const httpServer = createServer(app);
@@ -19,10 +25,10 @@ const public_dir = '/home/ubuntu/Working/ChatRoom/public/'
 
 // Import connection from db.js
 // const createAndConnectDB = require('./db.js');
-import createAndConnectDB  from './db.js'
+import { createAndConnectDB, addUser, selectAllRows, userLookUp } from './db.js'
 async function ConnectDB() {
 	const connection = await createAndConnectDB();
-	console.log('Connected to database as id ' + connection.threadId);
+	// console.log('Connected to database as id ' + connection.threadId);
 	return connection;
 }
 const dbConnection =  await ConnectDB();
@@ -61,21 +67,24 @@ io.on("connection", (socket) => {
 
 // Use session middleware
 app.use(session({
-    secret: 'your-secret-key',
+    secret: 'random_string_for_session_secret_12345',  // Your secret key here
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: { secure: false }
 }));
 
 app.get('/', (req, res) => {
-	// res.send('Test');
+	console.log(req.session);
+	console.log('username: ' + req.session.username);
 	if (req.session.username) {
 		console.log('user exissts');
+		res.sendFile(join(public_dir, 'index.html'));
 	} else {
 		console.log('user does not exist');
 		// res.sendFile(path.join(public_dir, 'login.html'));
-		// res.redirect('/login');
+		res.redirect('/signup');
 	}
-	res.sendFile(join(public_dir, 'index.html'));
+	// res.sendFile(join(public_dir, 'index.html'));
 });
 
 app.get('/chat.js', (req, res) => {
@@ -83,24 +92,59 @@ app.get('/chat.js', (req, res) => {
 });
 
 
-app.get('/login', (req, res) => {
-	// console.log('debug');
-
-	// TODO REMOVE
-	// FOR TESTING PURPOSE
-	const query = 'SELECT id, username, email FROM users WHERE id IS NOT NULL AND username IS NOT NULL AND email IS NOT NULL';
-	dbConnection.query(query, (err, results) => {
-		if (err) {
-			console.error('Error executing query:', err);
-			return;
-		}
-
-		console.log(`Query Results: ${JSON.stringify(results, null, 2)}`);
-	});
+app.get('/login', async (req, res) => {
 	res.sendFile(join(public_dir, 'login.html'));
+});
 
-})
+// Look up username and password
+app.post('/user_lookup', async (req, res) => {
+	const { username, password } = req.body;
+	console.log(username + password);
+	const isLoggedIn = await userLookUp(username, password);
 
+	try {
+		if (isLoggedIn === true) {
+			req.session.username = username; // Store the username in the session
+			res.redirect('/');
+		} else {
+			return res.status(401).send('Username or password is incorrect');
+		}
+	} catch {
+		console.error(error);
+        res.status(500).send('Internal Server Error');
+	}
+
+});
+
+
+// Sign up endpoint
+app.get('/signup', (req, res) => {
+	res.sendFile(join(public_dir, 'signup.html'));
+});
+
+
+app.post('/adduser', async (req, res) => {
+	console.log(`Body contains ${JSON.stringify(req.body, null, 2)}`);
+	const { email, username, password } = req.body;
+	try {
+		await addUser(email, username, password);
+
+		// Set the user information in the session after successful signup
+		req.session.username = username; // Store the username in the session
+		console.log(req.session);
+		res.redirect('/');
+
+
+	} catch (error) {
+        if (error.statusCode) {
+            // If the error has a statusCode property, send that status code and message
+            return res.status(error.statusCode).send(error.message);
+        }
+        return res.status(500).send('Database error');
+	}
+
+	return;
+});
 
 
 // app.get('/login', (req, res) => {
