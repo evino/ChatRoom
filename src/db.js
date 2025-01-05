@@ -3,6 +3,8 @@ import mysql from 'mysql2/promise';
 // import { mysql } from 'mysql2';
 
 let pool;
+
+// Creates connection to database
 export async function createAndConnectDB() {
     if (!pool) {
         pool = mysql.createPool({
@@ -39,7 +41,7 @@ export async function selectAllRows() {
     }
 }
 
-
+// Inserts user into database
 export async function addUser(email, username, password) {
     const sql = 'INSERT INTO users (email, username, password) VALUES (?, ?, ?)'; // Adjust this table name as needed
     try {
